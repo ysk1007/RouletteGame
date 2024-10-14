@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using UnityEngine.Events;
 using System.Collections.Generic;
+using TMPro;
 
 namespace EasyUI.PickerWheelUI
 {
@@ -61,8 +62,11 @@ namespace EasyUI.PickerWheelUI
 
         private List<int> nonZeroChancesIndices = new List<int>(); // 0 이상의 확률을 가진 조각들의 인덱스 리스트
 
-        private void Start()
+        public void WheelSetting()
         {
+            DestroyAllChildren(linesParent);
+            DestroyAllChildren(wheelPiecesParent);
+
             // 각 조각의 각도를 계산
             pieceAngle = 360 / wheelPieces.Length;
             halfPieceAngle = pieceAngle / 2f;
@@ -89,7 +93,7 @@ namespace EasyUI.PickerWheelUI
         private void Generate()
         {
             // 룰렛의 각 조각을 생성하고 설정
-            wheelPiecePrefab = InstantiatePiece();
+            //wheelPiecePrefab = InstantiatePiece();
 
             // 각 조각의 크기를 조정
             RectTransform rt = wheelPiecePrefab.transform.GetChild(0).GetComponent<RectTransform>();
@@ -101,7 +105,7 @@ namespace EasyUI.PickerWheelUI
             for (int i = 0; i < wheelPieces.Length; i++)
                 DrawPiece(i); // 각 조각을 그리는 함수 호출
 
-            Destroy(wheelPiecePrefab); // 임시로 생성한 프리팹을 삭제
+            //Destroy(wheelPiecePrefab); // 임시로 생성한 프리팹을 삭제
         }
 
         private void DrawPiece(int index)
@@ -112,8 +116,8 @@ namespace EasyUI.PickerWheelUI
 
             // 아이콘, 라벨, 금액 텍스트를 설정
             pieceTrns.GetChild(0).GetComponent<Image>().sprite = piece.Icon;
-            pieceTrns.GetChild(1).GetComponent<Text>().text = piece.Label;
-            pieceTrns.GetChild(2).GetComponent<Text>().text = piece.Amount.ToString();
+            pieceTrns.GetChild(1).GetComponent<TextMeshProUGUI>().text = piece.Label;
+            pieceTrns.GetChild(2).GetComponent<TextMeshProUGUI>().text = piece.Amount.ToString();
 
             // 구간 사이의 선을 그리기
             Transform lineTrns = Instantiate(linePrefab, linesParent.position, Quaternion.identity, linesParent).transform;
@@ -244,6 +248,15 @@ namespace EasyUI.PickerWheelUI
             // 조각 개수가 범위를 벗어나면 오류 메시지 출력
             if (wheelPieces.Length > piecesMax || wheelPieces.Length < piecesMin)
                 Debug.LogError("[ PickerWheelwheel ]  pieces length must be between " + piecesMin + " and " + piecesMax);
+        }
+
+        private void DestroyAllChildren(Transform parent)
+        {
+            // 부모 오브젝트의 모든 자식들을 순회
+            foreach (Transform child in parent)
+            {
+                Destroy(child.gameObject);  // 각 자식 오브젝트를 파괴
+            }
         }
     }
 }
