@@ -135,65 +135,73 @@ namespace EasyUI.PickerWheelUI
 
         public void Spin()
         {
-            // 룰렛을 돌리는 함수
             if (!_isSpinning)
             {
-                _isSpinning = true; // 돌리는 상태로 변경
+                _isSpinning = true;
                 if (onSpinStartEvent != null)
-                    onSpinStartEvent.Invoke(); // 룰렛 시작 이벤트 호출
+                    onSpinStartEvent.Invoke();
 
-                // 랜덤하게 조각을 선택
                 int index = GetRandomPieceIndex();
                 WheelPiece piece = wheelPieces[index];
 
-                // 선택된 조각의 확률이 0인 경우, 다른 조각을 선택
                 if (piece.Chance == 0 && nonZeroChancesIndices.Count != 0)
                 {
                     index = nonZeroChancesIndices[Random.Range(0, nonZeroChancesIndices.Count)];
                     piece = wheelPieces[index];
                 }
 
-                // 목표 각도를 계산
                 float angle = -(pieceAngle * index);
                 float rightOffset = (angle - halfPieceAngleWithPaddings) % 360;
                 float leftOffset = (angle + halfPieceAngleWithPaddings) % 360;
                 float randomAngle = Random.Range(leftOffset, rightOffset);
                 Vector3 targetRotation = Vector3.back * (randomAngle + spinPower * spinDuration);
 
-                float prevAngle, currentAngle;
-                prevAngle = currentAngle = wheelCircle.eulerAngles.z;
+                float prevAngle = wheelCircle.eulerAngles.z;
+                float currentAngle = prevAngle;
+                bool isIndicatorOnTheLine = false;
 
-                bool isIndicatorOnTheLine = false; // 틱 소리가 발생할지 여부
+                // 현재 피스 인덱스 추적을 위한 변수 (반시계 방향)
+                int currentPieceIndex = Mathf.CeilToInt((currentAngle) / pieceAngle) % wheelPieces.Length;
 
-                // 룰렛을 애니메이션으로 회전
                 wheelCircle
                 .DORotate(targetRotation, spinDuration, RotateMode.FastBeyond360)
                 .SetEase(Ease.InOutQuart)
                 .OnUpdate(() => {
-                    float diff = Mathf.Abs(prevAngle - currentAngle);
-                    if (diff >= halfPieceAngle)
+                    currentAngle = wheelCircle.eulerAngles.z;
+
+                    float angleDiff = Mathf.Abs(prevAngle - currentAngle);
+                    if (angleDiff >= halfPieceAngle)
                     {
                         if (isIndicatorOnTheLine)
                         {
-                            audioSource.PlayOneShot(audioSource.clip); // 틱 소리 재생
+                            audioSource.PlayOneShot(audioSource.clip);
                         }
+
                         prevAngle = currentAngle;
-                        isIndicatorOnTheLine = !isIndicatorOnTheLine; // 틱 소리 토글
+                        isIndicatorOnTheLine = !isIndicatorOnTheLine;
+
+                        // 현재 피스 인덱스 계산 (반시계 방향)
+                        currentPieceIndex = Mathf.CeilToInt((currentAngle) / pieceAngle) % wheelPieces.Length;
+                        if (currentPieceIndex < 0)
+                            currentPieceIndex += wheelPieces.Length;
+
+                        // 지나가는 피스의 정보 출력 또는 사용
+                        WheelPiece passedPiece = wheelPieces[currentPieceIndex];
+                        passedPiece.PieceScore();
                     }
-                    currentAngle = wheelCircle.eulerAngles.z;
                 })
                 .OnComplete(() => {
-                    // 룰렛이 멈췄을 때 실행되는 로직
                     _isSpinning = false;
                     if (onSpinEndEvent != null)
-                        onSpinEndEvent.Invoke(piece); // 룰렛 종료 이벤트 호출
+                        onSpinEndEvent.Invoke(piece);
 
                     onSpinStartEvent = null;
                     onSpinEndEvent = null;
                 });
-
             }
         }
+
+
 
         public void OnSpinStart(UnityAction action)
         {
