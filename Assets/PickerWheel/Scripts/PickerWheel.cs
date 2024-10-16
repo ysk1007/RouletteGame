@@ -11,6 +11,7 @@ namespace EasyUI.PickerWheelUI
     // PickerWheel 클래스: 룰렛 휠을 구현하는 클래스
     public class PickerWheel : MonoBehaviour
     {
+        public static PickerWheel instance;
 
         [Header("References :")]
         [SerializeField] private GameObject linePrefab; // 룰렛 구간 사이의 선을 나타내는 프리팹
@@ -21,6 +22,9 @@ namespace EasyUI.PickerWheelUI
         [SerializeField] private Transform wheelCircle; // 룰렛의 중심 원 Transform
         [SerializeField] private GameObject wheelPiecePrefab; // 룰렛의 각 구간 조각을 나타내는 프리팹
         [SerializeField] private Transform wheelPiecesParent; // 룰렛 조각들을 담을 부모 오브젝트
+
+        [Space]
+        public Sprite[] tokenSprites;
 
         [Space]
         [Header("Sounds :")]
@@ -61,6 +65,11 @@ namespace EasyUI.PickerWheelUI
         private System.Random rand = new System.Random(); // 랜덤 값을 생성하는 객체
 
         private List<int> nonZeroChancesIndices = new List<int>(); // 0 이상의 확률을 가진 조각들의 인덱스 리스트
+
+        private void Awake()
+        {
+            instance = this;
+        }
 
         public void WheelSetting()
         {
@@ -115,9 +124,17 @@ namespace EasyUI.PickerWheelUI
             Transform pieceTrns = InstantiatePiece().transform.GetChild(0);
 
             // 아이콘, 라벨, 금액 텍스트를 설정
-            pieceTrns.GetChild(0).GetComponent<Image>().sprite = piece.Icon;
-            pieceTrns.GetChild(1).GetComponent<TextMeshProUGUI>().text = piece.Label;
-            pieceTrns.GetChild(2).GetComponent<TextMeshProUGUI>().text = piece.Amount.ToString();
+            piece.token.TokenSetting(
+                pieceTrns.GetChild(0).GetComponent<Image>(),
+                pieceTrns.GetChild(1).GetComponent<Image>(),
+                pieceTrns.GetChild(0).GetComponentInChildren<TextMeshProUGUI>(),
+                pieceTrns.GetChild(1).GetComponentInChildren<TextMeshProUGUI>());
+
+            /*pieceTrns.GetChild(0).GetComponent<Image>().sprite = piece.outside_Icon;
+            pieceTrns.GetChild(0).GetComponentInChildren<TextMeshProUGUI>().text = piece.outside_Label;
+
+            pieceTrns.GetChild(1).GetComponent<Image>().sprite = piece.inside_Icon;
+            pieceTrns.GetChild(1).GetComponentInChildren<TextMeshProUGUI>().text = piece.inside_Label;*/
 
             // 구간 사이의 선을 그리기
             Transform lineTrns = Instantiate(linePrefab, linesParent.position, Quaternion.identity, linesParent).transform;
@@ -187,7 +204,7 @@ namespace EasyUI.PickerWheelUI
 
                         // 지나가는 피스의 정보 출력 또는 사용
                         WheelPiece passedPiece = wheelPieces[currentPieceIndex];
-                        passedPiece.PieceScore();
+                        passedPiece.token.OutSideTokenSocre();
                     }
                 })
                 .OnComplete(() => {

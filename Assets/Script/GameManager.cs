@@ -76,7 +76,7 @@ public class GameManager : MonoBehaviour
 
             pickerWheel.OnSpinEnd(wheelPiece =>
             {
-                Debug.Log("Spin end: Label:"+wheelPiece.Label+ ", Amount:"+ wheelPiece.Amount);
+                Debug.Log("Spin end: Amount:"+ wheelPiece.inside_Amount);
                 gameScore = (gameScore + addScore - subScore) * multiScore / diviScore;
                 uiSpinButton.interactable = true;
                 uiSpinButtonText.text = "Spin";

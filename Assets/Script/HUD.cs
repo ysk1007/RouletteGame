@@ -32,16 +32,16 @@ public class HUD : MonoBehaviour
             case InfoType.CoinCount:
                 break;
             case InfoType.addScore:
-                thisText.text = "+" + GameManager.instance.AddScore.ToString();
+                thisText.text = "+ " + GameManager.instance.AddScore.ToString();
                 break;
             case InfoType.multiScore:
-                thisText.text = "x" + GameManager.instance.MultiScore.ToString();
+                thisText.text = "x " + GameManager.instance.MultiScore.ToString();
                 break;
             case InfoType.subScore:
-                thisText.text = "-" + GameManager.instance.SubScore.ToString();
+                thisText.text = "- " + GameManager.instance.SubScore.ToString();
                 break;
             case InfoType.diviScore:
-                thisText.text = "/" + GameManager.instance.DiviScore.ToString();
+                thisText.text = "¡À " + GameManager.instance.DiviScore.ToString();
                 break;
             default:
                 break;
