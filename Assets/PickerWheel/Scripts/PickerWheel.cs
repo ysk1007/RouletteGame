@@ -25,6 +25,8 @@ namespace EasyUI.PickerWheelUI
 
         [Space]
         public Sprite[] tokenSprites;
+        public List<TextMeshProUGUI> scoreTexts;
+        public List<Animator> scoreAnimators;
 
         [Space]
         [Header("Sounds :")]
@@ -73,6 +75,10 @@ namespace EasyUI.PickerWheelUI
 
         public void WheelSetting()
         {
+            spinPower = 120;
+            scoreAnimators = new List<Animator>();
+            scoreTexts = new List<TextMeshProUGUI>();
+
             DestroyAllChildren(linesParent);
             DestroyAllChildren(wheelPiecesParent);
 
@@ -123,6 +129,12 @@ namespace EasyUI.PickerWheelUI
             WheelPiece piece = wheelPieces[index];
             Transform pieceTrns = InstantiatePiece().transform.GetChild(0);
 
+            // 스피드 토큰에 따른 휠 속도 조절
+            if (piece.token.outSideToken == Token.OutSideToken.pSpeedToken) spinPower += 60;
+            if (piece.token.outSideToken == Token.OutSideToken.nSpeedToken) spinPower -= 60;
+
+            scoreAnimators.Add(pieceTrns.GetChild(0).GetComponent<Animator>());
+            scoreTexts.Add(pieceTrns.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>());
             // 아이콘, 라벨, 금액 텍스트를 설정
             piece.token.TokenSetting(
                 pieceTrns.GetChild(0).GetComponent<Image>(),
@@ -173,12 +185,13 @@ namespace EasyUI.PickerWheelUI
                 float randomAngle = Random.Range(leftOffset, rightOffset);
                 Vector3 targetRotation = Vector3.back * (randomAngle + spinPower * spinDuration);
 
+                // prevAngle과 각도를 초기화
                 float prevAngle = wheelCircle.eulerAngles.z;
                 float currentAngle = prevAngle;
                 bool isIndicatorOnTheLine = false;
 
-                // 현재 피스 인덱스 추적을 위한 변수 (반시계 방향)
-                int currentPieceIndex = Mathf.CeilToInt((currentAngle) / pieceAngle) % wheelPieces.Length;
+                // 돌입할 피스 인덱스 추적 (반시계 방향)
+                int nextPieceIndex = Mathf.CeilToInt((currentAngle) / pieceAngle) % wheelPieces.Length;
 
                 wheelCircle
                 .DORotate(targetRotation, spinDuration, RotateMode.FastBeyond360)
@@ -186,37 +199,47 @@ namespace EasyUI.PickerWheelUI
                 .OnUpdate(() => {
                     currentAngle = wheelCircle.eulerAngles.z;
 
+                    // 각도 차이를 계산하고 다음 피스 돌입 시점 처리
                     float angleDiff = Mathf.Abs(prevAngle - currentAngle);
                     if (angleDiff >= halfPieceAngle)
                     {
                         if (isIndicatorOnTheLine)
                         {
                             audioSource.PlayOneShot(audioSource.clip);
+
+                            // 다음 돌입할 피스의 인덱스 계산 (반시계 방향)
+                            nextPieceIndex = Mathf.CeilToInt((currentAngle - halfPieceAngle) / pieceAngle) % wheelPieces.Length;
+                            if (nextPieceIndex < 0)
+                                nextPieceIndex += wheelPieces.Length;
+
+                            // 돌입하는 피스의 정보 출력 또는 사용
+                            WheelPiece incomingPiece = wheelPieces[nextPieceIndex];
+                            incomingPiece.token.OutSideTokenSocre(nextPieceIndex);
                         }
 
                         prevAngle = currentAngle;
-                        isIndicatorOnTheLine = !isIndicatorOnTheLine;
-
-                        // 현재 피스 인덱스 계산 (반시계 방향)
-                        currentPieceIndex = Mathf.CeilToInt((currentAngle) / pieceAngle) % wheelPieces.Length;
-                        if (currentPieceIndex < 0)
-                            currentPieceIndex += wheelPieces.Length;
-
-                        // 지나가는 피스의 정보 출력 또는 사용
-                        WheelPiece passedPiece = wheelPieces[currentPieceIndex];
-                        passedPiece.token.OutSideTokenSocre();
+                        isIndicatorOnTheLine = !isIndicatorOnTheLine; // 틱 소리 상태를 토글
                     }
                 })
                 .OnComplete(() => {
                     _isSpinning = false;
+
+                    // 스핀 완료 후 변수 초기화
+                    prevAngle = 0;
+                    currentAngle = 0;
+                    isIndicatorOnTheLine = false;
+
                     if (onSpinEndEvent != null)
                         onSpinEndEvent.Invoke(piece);
 
                     onSpinStartEvent = null;
                     onSpinEndEvent = null;
+                    wheelCircle.eulerAngles = Vector3.zero;
                 });
             }
         }
+
+
 
 
 

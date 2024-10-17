@@ -7,6 +7,19 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
+    // 점수 계산 방식
+    public enum ScoreCalculationType
+    {
+        // 점수 무효 ( 0점 처리 )
+        invalidityScore = -1 , 
+
+        // 기본 계산
+        BasicCalculation = 0 , 
+
+        // 부정 무시
+        disregardNegativity = 1
+    }
+
     public static GameManager instance;
 
     [Header("GameScore :")]
@@ -71,13 +84,14 @@ public class GameManager : MonoBehaviour
 
             pickerWheel.OnSpinStart(() =>
             {
+                ResetScore();
                 Debug.Log("Spin started..");
             });
 
             pickerWheel.OnSpinEnd(wheelPiece =>
             {
-                Debug.Log("Spin end: Amount:"+ wheelPiece.inside_Amount);
-                gameScore = (gameScore + addScore - subScore) * multiScore / diviScore;
+                Debug.Log("Spin end: Amount:"+ wheelPiece.Index);
+                gameScore += ScoreCalculation(wheelPiece.token.InSideTokenScore());
                 uiSpinButton.interactable = true;
                 uiSpinButtonText.text = "Spin";
             });
@@ -92,5 +106,28 @@ public class GameManager : MonoBehaviour
         
     }
 
+    void ResetScore()
+    {
+        addScore = subScore = 0;
+        multiScore = diviScore = 1;
+    }
 
+    float ScoreCalculation(ScoreCalculationType type)
+    {
+        float score = 0;
+
+        switch (type)
+        {
+            case ScoreCalculationType.invalidityScore:
+                break;
+            case ScoreCalculationType.BasicCalculation:
+                score = (addScore - subScore) *multiScore / diviScore;
+                break;
+            case ScoreCalculationType.disregardNegativity:
+                score = addScore * multiScore;
+                break;
+        }
+
+        return score;
+    }
 }

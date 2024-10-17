@@ -1,9 +1,13 @@
 using EasyUI.PickerWheelUI;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
+using Unity.Burst.Intrinsics;
 using UnityEngine;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
+using static GameManager;
 
 [System.Serializable]
 public class Token
@@ -28,12 +32,12 @@ public class Token
     public void TokenSetting(Image outSideTokenImage,Image inSideTokenImage, TextMeshProUGUI outSideLabel, TextMeshProUGUI inSideLabel)
     {
         outSideTokenImage.sprite = (outSideToken.GetHashCode() == 0) ? PickerWheel.instance.tokenSprites[0] :  (outSideToken.GetHashCode() < 0 ? PickerWheel.instance.tokenSprites[1] : PickerWheel.instance.tokenSprites[2]);
-        inSideTokenImage.sprite = (inSideToken.GetHashCode() == 0) ? PickerWheel.instance.tokenSprites[0] : (outSideToken.GetHashCode() < 0 ? PickerWheel.instance.tokenSprites[1] : PickerWheel.instance.tokenSprites[2]);
+        inSideTokenImage.sprite = (inSideToken.GetHashCode() == 0) ? PickerWheel.instance.tokenSprites[0] : (inSideToken.GetHashCode() < 0 ? PickerWheel.instance.tokenSprites[1] : PickerWheel.instance.tokenSprites[2]);
         switch (outSideToken)
         {
             case OutSideToken.nBetterScoreToken:
             case OutSideToken.pBetterScoreToken:
-                outSideLabel.text = "0~9";
+                outSideLabel.text = "10~30";
                 break;
             case OutSideToken.nSpeedToken:
             case OutSideToken.pSpeedToken:
@@ -41,7 +45,7 @@ public class Token
                 break;
             case OutSideToken.nScoreToken:
             case OutSideToken.pScoreToken:
-                outSideLabel.text = "10~30";
+                outSideLabel.text = "1~9";
                 break;
             case OutSideToken.EmptyToken:
                 outSideLabel.text = "";
@@ -86,32 +90,128 @@ public class Token
         }
     }
 
-    public void OutSideTokenSocre()
+    public void OutSideTokenSocre(int currentPieceIndex = default(int), HashSet<int> visitedIndexes = null)
     {
+        if (visitedIndexes == null)
+        {
+            visitedIndexes = new HashSet<int>();
+        }
+
+        // 이미 방문한 인덱스인지 확인
+        if (visitedIndexes.Contains(currentPieceIndex))
+        {
+            return; // 이미 방문한 인덱스면 종료
+        }
+
+        visitedIndexes.Add(currentPieceIndex); // 현재 인덱스 추가
+
+        int score = 0;
         switch (outSideToken)
         {
             case OutSideToken.nBetterScoreToken:
-                GameManager.instance.AddScore -= Random.Range(-10, -31);
+                score = Random.Range(-10, -31);
+                GameManager.instance.AddScore = score;
                 break;
             case OutSideToken.nSpeedToken:
                 break;
             case OutSideToken.nScoreToken:
-                GameManager.instance.AddScore -= Random.Range(0, 10);
+                score = Random.Range(-1, -10);
+                GameManager.instance.SubScore = score;
                 break;
             case OutSideToken.EmptyToken:
                 break;
             case OutSideToken.pScoreToken:
-                GameManager.instance.AddScore += Random.Range(0, 10);
+                score = Random.Range(1, 10);
+                GameManager.instance.AddScore = score;
                 break;
             case OutSideToken.pSpeedToken:
                 break;
             case OutSideToken.pSideToken:
-                break;
+                int leftIndex = currentPieceIndex - 1 >= 0 ? currentPieceIndex - 1 : PickerWheel.instance.wheelPieces.Length - 1;
+                int rightIndex = currentPieceIndex + 1 > PickerWheel.instance.wheelPieces.Length - 1 ? 0 : currentPieceIndex + 1;
+
+                // 양 옆 토큰에 대해 재귀 호출
+                PickerWheel.instance.wheelPieces[leftIndex].token.OutSideTokenSocre(leftIndex, visitedIndexes);
+                PickerWheel.instance.wheelPieces[rightIndex].token.OutSideTokenSocre(rightIndex, visitedIndexes);
+                PickerWheel.instance.scoreTexts[currentPieceIndex].text = "< ! >";
+                PickerWheel.instance.scoreAnimators[currentPieceIndex].SetTrigger("Show");
+                return;
             case OutSideToken.pBetterScoreToken:
-                GameManager.instance.AddScore += Random.Range(10, 31);
+                score = Random.Range(10, 31);
+                GameManager.instance.AddScore = score;
                 break;
             default:
                 break;
         }
+
+        PickerWheel.instance.scoreTexts[currentPieceIndex].text = score.ToString();
+        PickerWheel.instance.scoreTexts[currentPieceIndex].color = (score >= 0) ? Color.green : Color.red;
+        PickerWheel.instance.scoreAnimators[currentPieceIndex].SetTrigger("Show");
+        ObjectPool.instance.GetObject(PickerWheel.instance.transform.position, score);
     }
+
+    public ScoreCalculationType InSideTokenScore()
+    {
+        float score = 0;
+        ScoreCalculationType calculationType = ScoreCalculationType.BasicCalculation;
+        switch (inSideToken)
+        {
+            // 스핀 기회 -1
+            case InSideToken.nBonusSpinToken:
+                break;
+
+            // 점수 무효
+            case InSideToken.nInvalidityToken:
+                return ScoreCalculationType.invalidityScore;
+
+            // 1.0 ~ 9.0 (나누기)
+            case InSideToken.nPercentToken:
+                // 1.0에서 9.0 사이의 랜덤 값 생성
+                // 소수점 첫째 자리로 반올림
+                score = Mathf.Round(Random.Range(1f, 9f) * 10f) / 10f;
+                GameManager.instance.DiviScore = score;
+                break;
+
+            // -100 ~ -999
+            case InSideToken.nScoreToken:
+                score = Random.Range(-100, -999);
+                GameManager.instance.SubScore = score;
+                break;
+
+            // 빈 토큰
+            case InSideToken.EmptyToken:
+                break;
+
+            // +100 ~ +999
+            case InSideToken.pScoreToken:
+                score = Random.Range(100, 999);
+                GameManager.instance.AddScore = score;
+                break;
+
+            // +1.0 ~ +9.0 (곱하기)
+            case InSideToken.pPercentToken:
+                // 1.0에서 9.0 사이의 랜덤 값 생성
+                // 소수점 첫째 자리로 반올림
+                score = Mathf.Round(Random.Range(1f, 9f) * 10f) / 10f;
+                GameManager.instance.MultiScore = score;
+                break;
+
+            // 좌측 토큰 효과 복사
+            case InSideToken.pCopyToken:
+                break;
+
+            // 부정 무효
+            case InSideToken.pInvalidityToken:
+                calculationType = ScoreCalculationType.disregardNegativity;
+                break;
+
+            // 스핀 기회 +1
+            case InSideToken.pBonusSpinToken:
+                break;
+            default:
+                break;
+        }
+        return calculationType;
+    }
+
 }
