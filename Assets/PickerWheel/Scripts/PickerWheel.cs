@@ -24,7 +24,8 @@ namespace EasyUI.PickerWheelUI
         [SerializeField] private Transform wheelPiecesParent; // 룰렛 조각들을 담을 부모 오브젝트
 
         [Space]
-        public Sprite[] tokenSprites;
+        public Sprite[] outSide_tokenSprites;
+        public Sprite[] inSide_tokenSprites;
         public List<TextMeshProUGUI> scoreTexts;
         public List<Animator> scoreAnimators;
 

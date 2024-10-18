@@ -17,6 +17,7 @@ public class TextMover : MonoBehaviour
     {
         TextMeshProUGUI textComponent = this.GetComponent<TextMeshProUGUI>();
         textComponent.text = score.ToString();
+        textComponent.color = (score > 0) ? Color.green : Color.red;
         this.transform.position = startPosition;
 
         // 애니메이션

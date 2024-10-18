@@ -31,8 +31,8 @@ public class Token
 
     public void TokenSetting(Image outSideTokenImage,Image inSideTokenImage, TextMeshProUGUI outSideLabel, TextMeshProUGUI inSideLabel)
     {
-        outSideTokenImage.sprite = (outSideToken.GetHashCode() == 0) ? PickerWheel.instance.tokenSprites[0] :  (outSideToken.GetHashCode() < 0 ? PickerWheel.instance.tokenSprites[1] : PickerWheel.instance.tokenSprites[2]);
-        inSideTokenImage.sprite = (inSideToken.GetHashCode() == 0) ? PickerWheel.instance.tokenSprites[0] : (inSideToken.GetHashCode() < 0 ? PickerWheel.instance.tokenSprites[1] : PickerWheel.instance.tokenSprites[2]);
+        outSideTokenImage.sprite = (outSideToken.GetHashCode() == 0) ? PickerWheel.instance.outSide_tokenSprites[0] :  (outSideToken.GetHashCode() < 0 ? PickerWheel.instance.outSide_tokenSprites[1] : PickerWheel.instance.outSide_tokenSprites[2]);
+        inSideTokenImage.sprite = (inSideToken.GetHashCode() == 0) ? PickerWheel.instance.inSide_tokenSprites[0] : (inSideToken.GetHashCode() < 0 ? PickerWheel.instance.inSide_tokenSprites[1] : PickerWheel.instance.inSide_tokenSprites[2]);
         switch (outSideToken)
         {
             case OutSideToken.nBetterScoreToken:
@@ -106,15 +106,20 @@ public class Token
         visitedIndexes.Add(currentPieceIndex); // 현재 인덱스 추가
 
         int score = 0;
+
+        // 도착할 위치 ( 0 : 더하기 , 1 : 곱하기 , 2 : 빼기 , 3 : 나누기 )
+        int targetIndex = 0;
         switch (outSideToken)
         {
             case OutSideToken.nBetterScoreToken:
                 score = Random.Range(-10, -31);
-                GameManager.instance.AddScore = score;
+                targetIndex = 2;
+                GameManager.instance.SubScore = score;
                 break;
             case OutSideToken.nSpeedToken:
                 break;
             case OutSideToken.nScoreToken:
+                targetIndex = 2;
                 score = Random.Range(-1, -10);
                 GameManager.instance.SubScore = score;
                 break;
@@ -147,7 +152,7 @@ public class Token
         PickerWheel.instance.scoreTexts[currentPieceIndex].text = score.ToString();
         PickerWheel.instance.scoreTexts[currentPieceIndex].color = (score >= 0) ? Color.green : Color.red;
         PickerWheel.instance.scoreAnimators[currentPieceIndex].SetTrigger("Show");
-        ObjectPool.instance.GetObject(PickerWheel.instance.transform.position, score);
+        ObjectPool.instance.GetObject(PickerWheel.instance.transform.position, targetIndex, score);
     }
 
     public ScoreCalculationType InSideTokenScore()

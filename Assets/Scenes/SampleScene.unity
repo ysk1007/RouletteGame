@@ -1302,11 +1302,15 @@ PrefabInstance:
     - target: {fileID: 114361574848870256, guid: 160be82451391f6448834ec65286e007, type: 3}
       propertyPath: tokenSprites.Array.data[1]
       value: 
-      objectReference: {fileID: 21300000, guid: b579d8ffb107d3d4bb2c5b1db79828b4, type: 3}
+      objectReference: {fileID: 21300000, guid: ee20f4f74117e6047b1b5cf965df5997, type: 3}
     - target: {fileID: 114361574848870256, guid: 160be82451391f6448834ec65286e007, type: 3}
       propertyPath: tokenSprites.Array.data[2]
       value: 
-      objectReference: {fileID: 21300000, guid: 950494cef9a6ba44ab45257a7cdce82a, type: 3}
+      objectReference: {fileID: 21300000, guid: 619ebd0320ea0924d9b5706c127ad67b, type: 3}
+    - target: {fileID: 114361574848870256, guid: 160be82451391f6448834ec65286e007, type: 3}
+      propertyPath: inSide_tokenSprites.Array.size
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 114361574848870256, guid: 160be82451391f6448834ec65286e007, type: 3}
       propertyPath: wheelPieces.Array.data[0].Icon
       value: 
@@ -1335,6 +1339,10 @@ PrefabInstance:
       propertyPath: wheelPieces.Array.data[6].Icon
       value: 
       objectReference: {fileID: 21300000, guid: 76d23a6b55694874ab5f72a07150c3bc, type: 3}
+    - target: {fileID: 114361574848870256, guid: 160be82451391f6448834ec65286e007, type: 3}
+      propertyPath: outSide_tokenSprites.Array.size
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 114361574848870256, guid: 160be82451391f6448834ec65286e007, type: 3}
       propertyPath: wheelPieces.Array.data[0].Label
       value: -1
@@ -1423,6 +1431,30 @@ PrefabInstance:
       propertyPath: wheelPieces.Array.data[9].Chance
       value: 100
       objectReference: {fileID: 0}
+    - target: {fileID: 114361574848870256, guid: 160be82451391f6448834ec65286e007, type: 3}
+      propertyPath: inSide_tokenSprites.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: 48e2af51f0730654493ff259747c61fa, type: 3}
+    - target: {fileID: 114361574848870256, guid: 160be82451391f6448834ec65286e007, type: 3}
+      propertyPath: inSide_tokenSprites.Array.data[1]
+      value: 
+      objectReference: {fileID: 21300000, guid: ee20f4f74117e6047b1b5cf965df5997, type: 3}
+    - target: {fileID: 114361574848870256, guid: 160be82451391f6448834ec65286e007, type: 3}
+      propertyPath: inSide_tokenSprites.Array.data[2]
+      value: 
+      objectReference: {fileID: 21300000, guid: 619ebd0320ea0924d9b5706c127ad67b, type: 3}
+    - target: {fileID: 114361574848870256, guid: 160be82451391f6448834ec65286e007, type: 3}
+      propertyPath: outSide_tokenSprites.Array.data[0]
+      value: 
+      objectReference: {fileID: 21300000, guid: 48e2af51f0730654493ff259747c61fa, type: 3}
+    - target: {fileID: 114361574848870256, guid: 160be82451391f6448834ec65286e007, type: 3}
+      propertyPath: outSide_tokenSprites.Array.data[1]
+      value: 
+      objectReference: {fileID: 21300000, guid: b579d8ffb107d3d4bb2c5b1db79828b4, type: 3}
+    - target: {fileID: 114361574848870256, guid: 160be82451391f6448834ec65286e007, type: 3}
+      propertyPath: outSide_tokenSprites.Array.data[2]
+      value: 
+      objectReference: {fileID: 21300000, guid: 950494cef9a6ba44ab45257a7cdce82a, type: 3}
     - target: {fileID: 114361574848870256, guid: 160be82451391f6448834ec65286e007, type: 3}
       propertyPath: wheelPieces.Array.data[0].pieceType
       value: 0

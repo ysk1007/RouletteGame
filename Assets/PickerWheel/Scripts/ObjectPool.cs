@@ -8,8 +8,9 @@ public class ObjectPool : MonoBehaviour
     public int poolSize = 10; // 초기 풀 크기
 
     [SerializeField]
-    private Transform scoreText;
+    private Transform[] scoreText;
 
+    [SerializeField]
     private List<GameObject> pool;
 
     private void Awake()
@@ -27,14 +28,14 @@ public class ObjectPool : MonoBehaviour
         }
     }
 
-    public GameObject GetObject(Vector3 startPosition, int score)
+    public GameObject GetObject(Vector3 startPosition, int targetIndex, int score)
     {
         foreach (var obj in pool)
         {
             if (!obj.activeInHierarchy)
             {
                 obj.SetActive(true); // 활성화
-                obj.transform.GetComponent<TextMover>().AnimateScore(startPosition, scoreText.transform.position, score);
+                obj.transform.GetComponent<TextMover>().AnimateScore(startPosition, scoreText[targetIndex].transform.position, score);
                 return obj;
             }
         }
