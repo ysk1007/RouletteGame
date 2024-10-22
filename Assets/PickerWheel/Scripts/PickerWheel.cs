@@ -74,6 +74,11 @@ namespace EasyUI.PickerWheelUI
             instance = this;
         }
 
+        private void Start()
+        {
+            WheelSetting();
+        }
+
         public void WheelSetting()
         {
             spinPower = 120;
@@ -119,7 +124,9 @@ namespace EasyUI.PickerWheelUI
             rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, pieceHeight);
 
             for (int i = 0; i < wheelPieces.Length; i++)
+            {
                 DrawPiece(i); // 각 조각을 그리는 함수 호출
+            }
 
             //Destroy(wheelPiecePrefab); // 임시로 생성한 프리팹을 삭제
         }
@@ -127,21 +134,26 @@ namespace EasyUI.PickerWheelUI
         private void DrawPiece(int index)
         {
             // 특정 인덱스의 룰렛 조각을 그림
+            wheelPieces[index] = InstantiatePiece().transform.GetComponent<WheelPiece>();
             WheelPiece piece = wheelPieces[index];
-            Transform pieceTrns = InstantiatePiece().transform.GetChild(0);
+            Transform pieceTrns = piece.transform.GetChild(0);
 
             // 스피드 토큰에 따른 휠 속도 조절
-            if (piece.token.outSideToken == Token.OutSideToken.pSpeedToken) spinPower += 60;
-            if (piece.token.outSideToken == Token.OutSideToken.nSpeedToken) spinPower -= 60;
+            if (piece.outside_token.tokenType == OutSideToken.Type.pSpeedToken) spinPower += 60;
+            if (piece.outside_token.tokenType == OutSideToken.Type.nSpeedToken) spinPower -= 60;
 
             scoreAnimators.Add(pieceTrns.GetChild(0).GetComponent<Animator>());
             scoreTexts.Add(pieceTrns.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>());
             // 아이콘, 라벨, 금액 텍스트를 설정
-            piece.token.TokenSetting(
+            piece.outside_token.TokenSetting(
                 pieceTrns.GetChild(0).GetComponent<Image>(),
-                pieceTrns.GetChild(1).GetComponent<Image>(),
-                pieceTrns.GetChild(0).GetComponentInChildren<TextMeshProUGUI>(),
-                pieceTrns.GetChild(1).GetComponentInChildren<TextMeshProUGUI>());
+                pieceTrns.GetChild(0).GetComponentInChildren<TextMeshProUGUI>()
+                );
+
+            piece.inside_token.TokenSetting(
+                pieceTrns.GetChild(1).GetComponent<Image>(), 
+                pieceTrns.GetChild(1).GetComponentInChildren<TextMeshProUGUI>()
+                );
 
             /*pieceTrns.GetChild(0).GetComponent<Image>().sprite = piece.outside_Icon;
             pieceTrns.GetChild(0).GetComponentInChildren<TextMeshProUGUI>().text = piece.outside_Label;
@@ -215,7 +227,7 @@ namespace EasyUI.PickerWheelUI
 
                             // 돌입하는 피스의 정보 출력 또는 사용
                             WheelPiece incomingPiece = wheelPieces[nextPieceIndex];
-                            incomingPiece.token.OutSideTokenSocre(nextPieceIndex);
+                            incomingPiece.outside_token.TokenScore(nextPieceIndex);
                         }
 
                         prevAngle = currentAngle;

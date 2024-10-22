@@ -40,6 +40,7 @@ public class GameManager : MonoBehaviour
     [Space]
     [SerializeField] private PickerWheel pickerWheel;
 
+
     public float GameScore
     {
         get => gameScore;
@@ -91,7 +92,7 @@ public class GameManager : MonoBehaviour
             pickerWheel.OnSpinEnd(wheelPiece =>
             {
                 Debug.Log("Spin end: Amount:"+ wheelPiece.Index);
-                gameScore += ScoreCalculation(wheelPiece.token.InSideTokenScore());
+                gameScore += ScoreCalculation(wheelPiece.inside_token.CalculateScore());
                 uiSpinButton.interactable = true;
                 uiSpinButtonText.text = "Spin";
             });

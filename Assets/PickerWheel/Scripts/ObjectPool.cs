@@ -28,14 +28,14 @@ public class ObjectPool : MonoBehaviour
         }
     }
 
-    public GameObject GetObject(Vector3 startPosition, int targetIndex, int score)
+    public GameObject GetObject(Vector3 startPosition, Token.ScoreType scoreType, float score)
     {
         foreach (var obj in pool)
         {
             if (!obj.activeInHierarchy)
             {
                 obj.SetActive(true); // È°¼ºÈ­
-                obj.transform.GetComponent<TextMover>().AnimateScore(startPosition, scoreText[targetIndex].transform.position, score);
+                obj.transform.GetComponent<TextMover>().AnimateScore(startPosition, scoreText[scoreType.GetHashCode()].transform.position, score);
                 return obj;
             }
         }

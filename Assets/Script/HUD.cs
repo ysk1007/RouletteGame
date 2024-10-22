@@ -33,16 +33,20 @@ public class HUD : MonoBehaviour
             case InfoType.CoinCount:
                 break;
             case InfoType.addScore:
-                thisText.text = (GameManager.instance.AddScore > 0) ? " + " + GameManager.instance.AddScore.ToString("F0") : "";
+                thisText.text = //(GameManager.instance.AddScore > 0) ? " + " + GameManager.instance.AddScore.ToString("F0") : "";
+                    GameManager.instance.AddScore.ToString("F0");
                 break;
             case InfoType.multiScore:
-                thisText.text = (GameManager.instance.MultiScore > 1) ? " x " + GameManager.instance.MultiScore.ToString("F1") : "";
+                thisText.text = //(GameManager.instance.MultiScore > 1) ? " x " + GameManager.instance.MultiScore.ToString("F1") : "";
+                    GameManager.instance.MultiScore.ToString("F1");
                 break;
             case InfoType.subScore:
-                thisText.text = (GameManager.instance.SubScore < 0) ? " - " + (GameManager.instance.SubScore * -1).ToString("F0") : "";
+                thisText.text = //(GameManager.instance.SubScore < 0) ? " - " + (GameManager.instance.SubScore * -1).ToString("F0") : "";
+                    (GameManager.instance.SubScore * -1).ToString("F0");
                 break;
             case InfoType.diviScore:
-                thisText.text = (GameManager.instance.DiviScore > 1) ? " ¡À " + GameManager.instance.DiviScore.ToString("F1") : "";
+                thisText.text = //(GameManager.instance.DiviScore > 1) ? " ¡À " + GameManager.instance.DiviScore.ToString("F1") : "";
+                    GameManager.instance.DiviScore.ToString("F1");
                 break;
             case InfoType.spinPower:
                 thisText.text = string.Format("{0} ~ {1}", PickerWheel.instance.spinPower/ 20 - 1, PickerWheel.instance.spinPower / 20 + 1);

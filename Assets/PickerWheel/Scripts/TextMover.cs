@@ -13,7 +13,7 @@ public class TextMover : MonoBehaviour
             objectPool = ObjectPool.instance;
     }
 
-    public void AnimateScore(Vector3 startPosition, Vector3 targetPosition,int score)
+    public void AnimateScore(Vector3 startPosition, Vector3 targetPosition,float score)
     {
         TextMeshProUGUI textComponent = this.GetComponent<TextMeshProUGUI>();
         textComponent.text = score.ToString();
@@ -21,7 +21,7 @@ public class TextMover : MonoBehaviour
         this.transform.position = startPosition;
 
         // 애니메이션
-        this.transform.DOMove(targetPosition, 1f)
+        this.transform.DOMove(targetPosition, 1.5f)
             .OnComplete(() =>
             {
                 Debug.Log("도착");
