@@ -31,6 +31,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float subScore;
     [SerializeField] private float diviScore;
 
+    [Header("PieceCost :")]
+    [Space]
+    [SerializeField] private int positiveCost;
+    [SerializeField] private int negativeCost;
+
     [Header("Ui :")]
     [Space]
     [SerializeField] private Button uiSpinButton;
@@ -69,6 +74,18 @@ public class GameManager : MonoBehaviour
     {
         get => diviScore;
         set => diviScore += value;
+    }
+
+    public int PositiveCost
+    {
+        get => positiveCost;
+        set => positiveCost += value;
+    }
+
+    public int NegativeCost
+    {
+        get => negativeCost;
+        set => negativeCost += value;
     }
 
     private void Awake()
@@ -130,5 +147,35 @@ public class GameManager : MonoBehaviour
         }
 
         return score;
+    }
+
+    public void CostCalculation()
+    {
+        positiveCost = 0;
+        negativeCost = 0;
+
+        for (int i = 0; i < pickerWheel.wheelPieces.Length; i++)
+        {
+            if(pickerWheel.wheelPieces[i]?.outside_token.tokenType.GetHashCode() >= 0)
+            {
+                positiveCost += pickerWheel.wheelPieces[i].outside_token.tokenType.GetHashCode();
+            }
+            else
+            {
+                negativeCost += -1 * pickerWheel.wheelPieces[i].outside_token.tokenType.GetHashCode();
+            }
+        }
+
+        for (int i = 0; i < pickerWheel.wheelPieces.Length; i++)
+        {
+            if (pickerWheel.wheelPieces[i]?.inside_token.tokenType.GetHashCode() >= 0)
+            {
+                positiveCost += pickerWheel.wheelPieces[i].inside_token.tokenType.GetHashCode();
+            }
+            else
+            {
+                negativeCost += -1 * pickerWheel.wheelPieces[i].inside_token.tokenType.GetHashCode();
+            }
+        }
     }
 }

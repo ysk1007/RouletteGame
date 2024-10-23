@@ -13,5 +13,8 @@ public abstract class Token
 
     public abstract void TokenSetting(Image tokenImage, TextMeshProUGUI tokenLabel);
     public abstract void TokenScore(int currentPieceIndex = default, HashSet<int> visitedIndexes = null);
+
+    public abstract void TokenDesc(TextMeshProUGUI cost, TextMeshProUGUI desc);
+
     public abstract ScoreCalculationType CalculateScore();
 }

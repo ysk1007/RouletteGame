@@ -4,6 +4,13 @@ using UnityEngine;
 
 public class Popup : MonoBehaviour
 {
+    Animator animator;
+
+    private void Awake()
+    {
+        animator = GetComponent<Animator>();
+    }
+
     public void PopupOne()
     {
         transform.localScale = Vector3.one;
@@ -22,5 +29,15 @@ public class Popup : MonoBehaviour
     public void PopupClose()
     {
         gameObject.SetActive(false);
+    }
+
+    public void PopupShow()
+    {
+        animator.SetTrigger("Show");
+    }
+
+    public void PopupHide()
+    {
+        animator.SetTrigger("Hide");
     }
 }

@@ -13,6 +13,8 @@ namespace EasyUI.PickerWheelUI
     {
         public static PickerWheel instance;
 
+        [SerializeField] private bool customMode = false;
+
         [Header("References :")]
         [SerializeField] private GameObject linePrefab; // 룰렛 구간 사이의 선을 나타내는 프리팹
         [SerializeField] private Transform linesParent; // 선들을 담을 부모 오브젝트
@@ -24,6 +26,7 @@ namespace EasyUI.PickerWheelUI
         [SerializeField] private Transform wheelPiecesParent; // 룰렛 조각들을 담을 부모 오브젝트
 
         [Space]
+        public Sprite nullSprite;
         public Sprite[] outSide_tokenSprites;
         public Sprite[] inSide_tokenSprites;
         public List<TextMeshProUGUI> scoreTexts;
@@ -68,6 +71,12 @@ namespace EasyUI.PickerWheelUI
         private System.Random rand = new System.Random(); // 랜덤 값을 생성하는 객체
 
         private List<int> nonZeroChancesIndices = new List<int>(); // 0 이상의 확률을 가진 조각들의 인덱스 리스트
+
+        public bool CustomMode
+        {
+            get => customMode;
+            set => customMode = value;
+        }
 
         private void Awake()
         {
@@ -129,6 +138,7 @@ namespace EasyUI.PickerWheelUI
             }
 
             //Destroy(wheelPiecePrefab); // 임시로 생성한 프리팹을 삭제
+            GameManager.instance.CostCalculation();
         }
 
         private void DrawPiece(int index)

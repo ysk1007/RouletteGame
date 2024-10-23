@@ -9,7 +9,7 @@ public class HUD : MonoBehaviour
 {
     public enum InfoType
     {
-        GameScore, CoinCount, addScore, multiScore, subScore, diviScore, spinPower
+        GameScore, CoinCount, addScore, multiScore, subScore, diviScore, spinPower, positiveCost, negativeCost
     }
 
     public InfoType type;
@@ -50,6 +50,12 @@ public class HUD : MonoBehaviour
                 break;
             case InfoType.spinPower:
                 thisText.text = string.Format("{0} ~ {1}", PickerWheel.instance.spinPower/ 20 - 1, PickerWheel.instance.spinPower / 20 + 1);
+                break;
+            case InfoType.positiveCost:
+                thisText.text = string.Format("POSITIVE COST\n{0}", GameManager.instance.PositiveCost);
+                break;
+            case InfoType.negativeCost:
+                thisText.text = string.Format("NEGATIVE COST\n{0}", GameManager.instance.NegativeCost);
                 break;
             default:
                 break;

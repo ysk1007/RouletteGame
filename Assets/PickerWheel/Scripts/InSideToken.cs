@@ -19,7 +19,10 @@ public class InSideToken : Token
 
     public override void TokenSetting(Image tokenImage, TextMeshProUGUI tokenLabel)
     {
-        tokenImage.sprite = (tokenType.GetHashCode() == 0) ? PickerWheel.instance.inSide_tokenSprites[0] :
+        tokenImage.sprite = 
+            // 빈 토큰일 때
+            (tokenType.GetHashCode() == 0) ? 
+            (!PickerWheel.instance.CustomMode ? PickerWheel.instance.nullSprite : PickerWheel.instance.inSide_tokenSprites[0]) :
                             (tokenType.GetHashCode() < 0 ? PickerWheel.instance.inSide_tokenSprites[1] : PickerWheel.instance.inSide_tokenSprites[2]);
 
         switch (tokenType)
@@ -110,5 +113,55 @@ public class InSideToken : Token
     public override void TokenScore(int currentPieceIndex = default, HashSet<int> visitedIndexes = null)
     {
         // Implement if necessary for InSideToken
+    }
+
+    public override void TokenDesc(TextMeshProUGUI cost, TextMeshProUGUI desc)
+    {
+        if (tokenType.GetHashCode() >= 0)
+        {
+            cost.color = Color.green;
+            cost.text = string.Format("POSITIVE : {0}", tokenType.GetHashCode());
+        }
+        else
+        {
+            cost.color = Color.red;
+            cost.text = string.Format("NEGATIVE : {0}", -1*tokenType.GetHashCode());
+        }
+
+        switch (tokenType)
+        {
+            case Type.nBonusSpinToken:
+                desc.text = "이곳에서 멈추면 스핀 기회를 잃습니다.";
+                break;
+            case Type.nInvalidityToken:
+                desc.text = "이곳에서 멈추면 이번 기회에서 얻은 점수를 무효합니다.";
+                break;
+            case Type.nPercentToken:
+                desc.text = "이곳에서 멈추면 랜덤한 점수 배율(1.0~9.0)을 잃습니다.";
+                break;
+            case Type.nScoreToken:
+                desc.text = "이곳에서 멈추면 랜덤한 점수(100~999)를 잃습니다.";
+                break;
+            case Type.EmptyToken:
+                desc.text = "";
+                break;
+            case Type.pScoreToken:
+                desc.text = "이곳에서 멈추면 랜덤한 점수(100~999)를 얻습니다.";
+                break;
+            case Type.pPercentToken:
+                desc.text = "이곳에서 멈추면 랜덤한 점수 배율(1.0~9.0)을 얻습니다.";
+                break;
+            case Type.pCopyToken:
+                desc.text = "이곳에서 멈추면 오른쪽 토큰과 같은 효과를 얻습니다.";
+                break;
+            case Type.pInvalidityToken:
+                desc.text = "이곳에서 멈추면 이번 기회에서 얻은 부정 점수를 무효합니다.";
+                break;
+            case Type.pBonusSpinToken:
+                desc.text = "이곳에서 멈추면 스핀 기회를 얻습니다.";
+                break;
+            default:
+                break;
+        }
     }
 }

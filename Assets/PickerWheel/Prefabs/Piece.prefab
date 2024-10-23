@@ -53,10 +53,12 @@ MonoBehaviour:
     tokenType: 0
   outside_token_image: {fileID: 114106834943247130}
   outside_token_label: {fileID: 4184152852229941435}
+  outside_token_ui: {fileID: 8654680146165674310}
   inside_token:
     tokenType: 0
   inside_token_image: {fileID: 4045579576120494107}
   inside_token_label: {fileID: 7012635574062773609}
+  inside_token_ui: {fileID: 545077142533016843}
   Chance: 100
   Index: 0
   _weight: 0
@@ -96,7 +98,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 260}
-  m_SizeDelta: {x: 81, y: 146}
+  m_SizeDelta: {x: 131.4, y: 199.6}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &114371686897001792
 MonoBehaviour:
@@ -141,7 +143,7 @@ GameObject:
   - component: {fileID: 9131664354441811492}
   m_Layer: 0
   m_Name: outside_Token
-  m_TagString: Untagged
+  m_TagString: outsideToken
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -258,7 +260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18825af3603b0a642a481ffbc6dc045e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startPos: {x: 0, y: 0, z: 0}
+  piece: {fileID: 3447135673729375130}
   rectTransform: {fileID: 224339255891972564}
   canvasGroup: {fileID: 9131664354441811492}
   outside_token: 0
@@ -291,7 +293,7 @@ GameObject:
   - component: {fileID: 7205947573427720324}
   m_Layer: 0
   m_Name: Label
-  m_TagString: Untagged
+  m_TagString: insideToken
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -505,7 +507,7 @@ GameObject:
   - component: {fileID: 4619298383261162111}
   m_Layer: 0
   m_Name: inside_Token
-  m_TagString: Untagged
+  m_TagString: insideToken
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -542,7 +544,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 18825af3603b0a642a481ffbc6dc045e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  startPos: {x: 0, y: 0, z: 0}
+  piece: {fileID: 3447135673729375130}
   rectTransform: {fileID: 6525215488685150112}
   canvasGroup: {fileID: 4619298383261162111}
   outside_token: 0
@@ -633,7 +635,7 @@ GameObject:
   - component: {fileID: 269527482908972292}
   m_Layer: 0
   m_Name: Label
-  m_TagString: Untagged
+  m_TagString: outsideToken
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -844,7 +846,7 @@ GameObject:
   - component: {fileID: 1308309638868633920}
   m_Layer: 0
   m_Name: Text (TMP)
-  m_TagString: Untagged
+  m_TagString: outsideToken
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

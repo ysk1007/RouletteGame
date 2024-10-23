@@ -19,7 +19,10 @@ public class OutSideToken : Token
 
     public override void TokenSetting(Image tokenImage, TextMeshProUGUI tokenLabel)
     {
-        tokenImage.sprite = (tokenType.GetHashCode() == 0) ? PickerWheel.instance.outSide_tokenSprites[0] :
+        tokenImage.sprite = 
+            // 빈 토큰일 때
+            (tokenType.GetHashCode() == 0) ?
+            (!PickerWheel.instance.CustomMode ? PickerWheel.instance.nullSprite : PickerWheel.instance.outSide_tokenSprites[0]) :
                             (tokenType.GetHashCode() < 0 ? PickerWheel.instance.outSide_tokenSprites[1] : PickerWheel.instance.outSide_tokenSprites[2]);
 
         switch (tokenType)
@@ -98,6 +101,50 @@ public class OutSideToken : Token
         PickerWheel.instance.scoreTexts[currentPieceIndex].text = score.ToString();
         PickerWheel.instance.scoreTexts[currentPieceIndex].color = (score >= 0) ? Color.green : Color.red;
         PickerWheel.instance.scoreAnimators[currentPieceIndex].SetTrigger("Show");
+    }
+
+    public override void TokenDesc(TextMeshProUGUI cost, TextMeshProUGUI desc)
+    {
+        if (tokenType.GetHashCode() >= 0)
+        {
+            cost.color = Color.green;
+            cost.text = string.Format("POSITIVE : {0}", tokenType.GetHashCode());
+        }
+        else
+        {
+            cost.color = Color.red;
+            cost.text = string.Format("NEGATIVE : {0}", -1 * tokenType.GetHashCode());
+        }
+
+        switch (tokenType)
+        {
+            case Type.nBetterScoreToken:
+                desc.text = "이곳을 지나칠 때 랜덤한 점수(10~30)를 잃습니다.";
+                break;
+            case Type.nSpeedToken:
+                desc.text = "룰렛을 돌리는 힘이 약해집니다.";
+                break;
+            case Type.nScoreToken:
+                desc.text = "이곳을 지나칠 때 랜덤한 점수(0~9)를 잃습니다.";
+                break;
+            case Type.EmptyToken:
+                desc.text = "";
+                break;
+            case Type.pScoreToken:
+                desc.text = "이곳을 지나칠 때 랜덤한 점수(0~9)를 얻습니다.";
+                break;
+            case Type.pSpeedToken:
+                desc.text = "룰렛을 돌리는 힘이 강해집니다.";
+                break;
+            case Type.pSideToken:
+                desc.text = "이곳을 지나칠 때 양 옆 토큰을 발동합니다.";
+                break;
+            case Type.pBetterScoreToken:
+                desc.text = "이곳을 지나칠 때 랜덤한 점수(10~30)를 얻습니다.";
+                break;
+            default:
+                break;
+        }
     }
 
     public override ScoreCalculationType CalculateScore()
