@@ -27,6 +27,8 @@ public class FollowingToken : MonoBehaviour
     [SerializeField] private TextMeshProUGUI cost_text;
     [SerializeField] private TextMeshProUGUI desc_text;
 
+    [SerializeField] private GameObject storageTokenZone;
+
     public OutSideToken OutSideToken
     {
         get => outSideToken;
@@ -66,6 +68,8 @@ public class FollowingToken : MonoBehaviour
         }
 
         descAnimator.SetTrigger("Show");
+
+        storageTokenZone.SetActive(true);
     }
 
     public void init()
@@ -73,5 +77,7 @@ public class FollowingToken : MonoBehaviour
         transform.localScale = Vector3.zero;
         outSideToken.tokenType = OutSideToken.Type.EmptyToken;
         inSideToken.tokenType = InSideToken.Type.EmptyToken;
+
+        storageTokenZone.SetActive(false);
     }
 }

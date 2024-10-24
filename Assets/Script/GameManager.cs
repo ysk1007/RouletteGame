@@ -151,6 +151,7 @@ public class GameManager : MonoBehaviour
 
     public void CostCalculation()
     {
+        pickerWheel.spinPower = 120;
         positiveCost = 0;
         negativeCost = 0;
 
@@ -159,10 +160,14 @@ public class GameManager : MonoBehaviour
             if(pickerWheel.wheelPieces[i]?.outside_token.tokenType.GetHashCode() >= 0)
             {
                 positiveCost += pickerWheel.wheelPieces[i].outside_token.tokenType.GetHashCode();
+                // 스피드 토큰에 따른 휠 속도 조절
+                if (pickerWheel.wheelPieces[i].outside_token.tokenType == OutSideToken.Type.pSpeedToken) pickerWheel.spinPower += 60;
             }
             else
             {
                 negativeCost += -1 * pickerWheel.wheelPieces[i].outside_token.tokenType.GetHashCode();
+                // 스피드 토큰에 따른 휠 속도 조절
+                if (pickerWheel.wheelPieces[i].outside_token.tokenType == OutSideToken.Type.nSpeedToken) pickerWheel.spinPower -= 60;
             }
         }
 

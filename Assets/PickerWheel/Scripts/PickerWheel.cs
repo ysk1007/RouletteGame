@@ -47,7 +47,11 @@ namespace EasyUI.PickerWheelUI
 
         [Space]
         [Header("Picker wheel pieces :")]
+        public int currentPieceCount = 3; // 현재 피스 조각 개수
         public WheelPiece[] wheelPieces; // 룰렛의 각 구간을 나타내는 WheelPiece 배열
+        private GameObject[] piecesObject; // 룰렛의 각 구간 piece 오브젝트 배열
+        private GameObject[] linesObject; // 룰렛의 각 구간을 나누는 line 오브젝트 배열
+
 
         // 이벤트
         private UnityAction onSpinStartEvent; // 룰렛 시작 시 호출되는 이벤트
@@ -86,30 +90,42 @@ namespace EasyUI.PickerWheelUI
         private void Start()
         {
             WheelSetting();
+            WheelUpdate();
         }
 
         public void WheelSetting()
         {
-            spinPower = 120;
             scoreAnimators = new List<Animator>();
             scoreTexts = new List<TextMeshProUGUI>();
 
-            DestroyAllChildren(linesParent);
-            DestroyAllChildren(wheelPiecesParent);
+            piecesObject = new GameObject[piecesMax];
+            linesObject = new GameObject[piecesMax];
 
+            Generate(); // 룰렛 조각 생성
+
+            SetupAudio(); // 오디오 설정
+
+        }
+
+        public void WheelUpdate()
+        {
             // 각 조각의 각도를 계산
-            pieceAngle = 360 / wheelPieces.Length;
+            pieceAngle = 360 / currentPieceCount;
             halfPieceAngle = pieceAngle / 2f;
             halfPieceAngleWithPaddings = halfPieceAngle - (halfPieceAngle / 4f);
 
-            Generate(); // 룰렛 조각 생성
+            wheelPieces = new WheelPiece[currentPieceCount];
+
+            for (int i = 0; i < piecesObject.Length; i++)
+            {
+                UpdatePiece(i);
+            }
+
+            GameManager.instance.CostCalculation();
 
             CalculateWeightsAndIndices(); // 가중치와 인덱스 계산
             if (nonZeroChancesIndices.Count == 0)
                 Debug.LogError("You can't set all pieces chance to zero"); // 모든 조각의 확률이 0일 수 없다는 오류 메시지
-
-            SetupAudio(); // 오디오 설정
-
         }
 
         private void SetupAudio()
@@ -122,35 +138,19 @@ namespace EasyUI.PickerWheelUI
 
         private void Generate()
         {
-            // 룰렛의 각 조각을 생성하고 설정
-            //wheelPiecePrefab = InstantiatePiece();
-
-            // 각 조각의 크기를 조정
-            RectTransform rt = wheelPiecePrefab.transform.GetChild(0).GetComponent<RectTransform>();
-            float pieceWidth = Mathf.Lerp(pieceMinSize.x, pieceMaxSize.x, 1f - Mathf.InverseLerp(piecesMin, piecesMax, wheelPieces.Length));
-            float pieceHeight = Mathf.Lerp(pieceMinSize.y, pieceMaxSize.y, 1f - Mathf.InverseLerp(piecesMin, piecesMax, wheelPieces.Length));
-            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, pieceWidth);
-            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, pieceHeight);
-
-            for (int i = 0; i < wheelPieces.Length; i++)
+            for (int i = 0; i < piecesObject.Length; i++)
             {
                 DrawPiece(i); // 각 조각을 그리는 함수 호출
             }
-
-            //Destroy(wheelPiecePrefab); // 임시로 생성한 프리팹을 삭제
-            GameManager.instance.CostCalculation();
         }
 
         private void DrawPiece(int index)
         {
             // 특정 인덱스의 룰렛 조각을 그림
-            wheelPieces[index] = InstantiatePiece().transform.GetComponent<WheelPiece>();
-            WheelPiece piece = wheelPieces[index];
-            Transform pieceTrns = piece.transform.GetChild(0);
+            piecesObject[index] = InstantiatePiece();
 
-            // 스피드 토큰에 따른 휠 속도 조절
-            if (piece.outside_token.tokenType == OutSideToken.Type.pSpeedToken) spinPower += 60;
-            if (piece.outside_token.tokenType == OutSideToken.Type.nSpeedToken) spinPower -= 60;
+            WheelPiece piece = piecesObject[index].GetComponent<WheelPiece>();
+            Transform pieceTrns = piece.transform.GetChild(0);
 
             scoreAnimators.Add(pieceTrns.GetChild(0).GetComponent<Animator>());
             scoreTexts.Add(pieceTrns.GetChild(0).GetChild(1).GetComponent<TextMeshProUGUI>());
@@ -165,18 +165,58 @@ namespace EasyUI.PickerWheelUI
                 pieceTrns.GetChild(1).GetComponentInChildren<TextMeshProUGUI>()
                 );
 
-            /*pieceTrns.GetChild(0).GetComponent<Image>().sprite = piece.outside_Icon;
-            pieceTrns.GetChild(0).GetComponentInChildren<TextMeshProUGUI>().text = piece.outside_Label;
-
-            pieceTrns.GetChild(1).GetComponent<Image>().sprite = piece.inside_Icon;
-            pieceTrns.GetChild(1).GetComponentInChildren<TextMeshProUGUI>().text = piece.inside_Label;*/
-
             // 구간 사이의 선을 그리기
-            Transform lineTrns = Instantiate(linePrefab, linesParent.position, Quaternion.identity, linesParent).transform;
-            lineTrns.RotateAround(wheelPiecesParent.position, Vector3.back, (pieceAngle * index) + halfPieceAngle);
+            linesObject[index] = Instantiate(linePrefab, linesParent.position, Quaternion.identity, linesParent);
+
+            piecesObject[index].SetActive(false);
+            linesObject[index].SetActive(false);
+        }
+
+        private void UpdatePiece(int index)
+        {
+            if(index > currentPieceCount - 1)
+            {
+                piecesObject[index].SetActive(false);
+                linesObject[index].SetActive(false);
+                return;
+            }
+            // 각 조각의 크기를 조정
+            RectTransform rt = piecesObject[index].transform.GetChild(0).GetComponent<RectTransform>();
+            rt.anchoredPosition = wheelPiecePrefab.GetComponent<RectTransform>().anchoredPosition;
+            float pieceWidth = Mathf.Lerp(pieceMinSize.x, pieceMaxSize.x, 1f - Mathf.InverseLerp(piecesMin, piecesMax, currentPieceCount));
+            float pieceHeight = Mathf.Lerp(pieceMinSize.y, pieceMaxSize.y, 1f - Mathf.InverseLerp(piecesMin, piecesMax, currentPieceCount));
+            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, pieceWidth);
+            rt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, pieceHeight);
+
+            // 해당 인덱스의 피스 정보를 가져옴
+            WheelPiece piece = piecesObject[index].GetComponent<WheelPiece>();
+            wheelPieces[index] = piece;
+            Transform lineTrns = linesObject[index].transform;
+            Transform pieceTrns = piece.transform.GetChild(0);
+
+            pieceTrns.rotation = Quaternion.Euler(Vector3.zero);
+            lineTrns.rotation = Quaternion.Euler(Vector3.zero);
 
             // 조각의 회전을 설정
             pieceTrns.RotateAround(wheelPiecesParent.position, Vector3.back, pieceAngle * index);
+            lineTrns.RotateAround(wheelPiecesParent.position, Vector3.back, (pieceAngle * index) + halfPieceAngle);
+
+            piecesObject[index].SetActive(true);
+            linesObject[index].SetActive(true);
+        }
+
+        public void AddPiece()
+        {
+            if (currentPieceCount >= 12) return;
+            currentPieceCount++;
+            WheelUpdate();
+        }
+
+        public void RemovePiece()
+        {
+            if (currentPieceCount <= 2) return;
+            currentPieceCount--;
+            WheelUpdate();
         }
 
         private GameObject InstantiatePiece()

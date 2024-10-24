@@ -63,9 +63,6 @@ namespace EasyUI.PickerWheelUI {
                         inside_token.tokenType = FollowingToken.instance.InSideToken.tokenType;
                         break;
                 }
-                if (draggedObject.GetComponent<TokenUi>().Piece != null)
-                    draggedObject.GetComponent<TokenUi>().Piece.TokenSetting();
-                TokenSetting();
                 GameManager.instance.CostCalculation();
             }
         }
