@@ -46,21 +46,32 @@ namespace EasyUI.PickerWheelUI {
 
             if (draggedObject != null)
             {
-                /*// 드래그된 오브젝트를 DropZone의 하위 오브젝트로 설정
-                draggedObject.transform.SetParent(transform);*/
-
                 // 드래그된 오브젝트의 위치를 부모에 맞게 초기화
                 switch (draggedObject.tag)
                 {
                     case "outsideToken":
+                        // 드래그 시작 오브젝트가 이미 토큰이 있으면
                         if (draggedObject.GetComponent<TokenUi>().Piece != null)
+                            // 현재 가지고 있는 토큰을 주고
                             draggedObject.GetComponent<TokenUi>().Piece.outside_token.tokenType = outside_token.tokenType;
+                        // 토큰을 받음
                         outside_token.tokenType = FollowingToken.instance.OutSideToken.tokenType;
+
+                        // 인벤토리에서 꺼냈을 때
+                        if (draggedObject.GetComponent<TokenUi>().CountText != null)
+                            GameManager.instance.GetSetToken(outside_token.tokenType, -1);
                         break;
                     case "insideToken":
+                        // 드래그 시작 오브젝트가 이미 토큰이 있으면
                         if (draggedObject.GetComponent<TokenUi>().Piece != null)
+                            // 현재 가지고 있는 토큰을 주고
                             draggedObject.GetComponent<TokenUi>().Piece.inside_token.tokenType = inside_token.tokenType;
+                        // 토큰을 받음
                         inside_token.tokenType = FollowingToken.instance.InSideToken.tokenType;
+
+                        // 인벤토리에서 꺼냈을 때
+                        if (draggedObject.GetComponent<TokenUi>().CountText != null)
+                            GameManager.instance.GetSetToken(inside_token.tokenType, -1);
                         break;
                 }
                 GameManager.instance.CostCalculation();

@@ -11,10 +11,10 @@ public class GameManager : MonoBehaviour
     public enum ScoreCalculationType
     {
         // 점수 무효 ( 0점 처리 )
-        invalidityScore = -1 , 
+        invalidityScore = -1,
 
         // 기본 계산
-        BasicCalculation = 0 , 
+        BasicCalculation = 0,
 
         // 부정 무시
         disregardNegativity = 1
@@ -31,10 +31,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float subScore;
     [SerializeField] private float diviScore;
 
-    [Header("PieceCost :")]
-    [Space]
-    [SerializeField] private int positiveCost;
-    [SerializeField] private int negativeCost;
+    private int spinChance; // 남은 스핀 횟수
+
+    //[Header("PieceCost :")]
+    private int positiveCost;
+    private int negativeCost;
 
     [Header("Ui :")]
     [Space]
@@ -44,6 +45,133 @@ public class GameManager : MonoBehaviour
     [Header("PickerWheel :")]
     [Space]
     [SerializeField] private PickerWheel pickerWheel;
+
+    [Space]
+    [Header("User Tokens")]
+    [Header("inside_Token :")]
+    [SerializeField] private int nBonusSpin_inside_Token;
+    [SerializeField] private int nInvalidity_inside_Token;
+    [SerializeField] private int nPercent_inside_Token;
+    [SerializeField] private int nScore_inside_Token;
+    [SerializeField] private int pScore_inside_Token;
+    [SerializeField] private int pPercent_inside_Token;
+    [SerializeField] private int pCopy_inside_Token;
+    [SerializeField] private int pInvalidity_inside_Token;
+    [SerializeField] private int pBonusSpin_inside_Token;
+
+    [Space]
+    [Header("outside_Token :")]
+    [SerializeField] private int nBetterScore_outside_Token;
+    [SerializeField] private int nSpeed_outside_Token;
+    [SerializeField] private int nScore_outside_Token;
+    [SerializeField] private int pScore_outside_Token;
+    [SerializeField] private int pSpeed_outside_Token;
+    [SerializeField] private int pSide_outside_Token;
+    [SerializeField] private int pBetterScore_outside_Token;
+
+    // get set 프로퍼티
+
+    public int SpinChance
+    {
+        get => spinChance;
+        set => spinChance = value;
+    }
+
+    public int NBonusSpinInsideToken
+    {
+        get => nBonusSpin_inside_Token;
+        set => nBonusSpin_inside_Token = value;
+    }
+
+    public int NInvalidityInsideToken
+    {
+        get => nInvalidity_inside_Token;
+        set => nInvalidity_inside_Token = value;
+    }
+
+    public int NPercentInsideToken
+    {
+        get => nPercent_inside_Token;
+        set => nPercent_inside_Token = value;
+    }
+
+    public int NScoreInsideToken
+    {
+        get => nScore_inside_Token;
+        set => nScore_inside_Token = value;
+    }
+
+    public int PScoreInsideToken
+    {
+        get => pScore_inside_Token;
+        set => pScore_inside_Token = value;
+    }
+
+    public int PPercentInsideToken
+    {
+        get => pPercent_inside_Token;
+        set => pPercent_inside_Token = value;
+    }
+
+    public int PCopyInsideToken
+    {
+        get => pCopy_inside_Token;
+        set => pCopy_inside_Token = value;
+    }
+
+    public int PInvalidityInsideToken
+    {
+        get => pInvalidity_inside_Token;
+        set => pInvalidity_inside_Token = value;
+    }
+
+    public int PBonusSpinInsideToken
+    {
+        get => pBonusSpin_inside_Token;
+        set => pBonusSpin_inside_Token = value;
+    }
+
+    public int NBetterScoreOutsideToken
+    {
+        get => nBetterScore_outside_Token;
+        set => nBetterScore_outside_Token = value;
+    }
+
+    public int NSpeedOutsideToken
+    {
+        get => nSpeed_outside_Token;
+        set => nSpeed_outside_Token = value;
+    }
+
+    public int NScoreOutsideToken
+    {
+        get => nScore_outside_Token;
+        set => nScore_outside_Token = value;
+    }
+
+    public int PScoreOutsideToken
+    {
+        get => pScore_outside_Token;
+        set => pScore_outside_Token = value;
+    }
+
+    public int PSpeedOutsideToken
+    {
+        get => pSpeed_outside_Token;
+        set => pSpeed_outside_Token = value;
+    }
+
+    public int PSideOutsideToken
+    {
+        get => pSide_outside_Token;
+        set => pSide_outside_Token = value;
+    }
+
+    public int PBetterScoreOutsideToken
+    {
+        get => pBetterScore_outside_Token;
+        set => pBetterScore_outside_Token = value;
+    }
 
 
     public float GameScore
@@ -108,7 +236,7 @@ public class GameManager : MonoBehaviour
 
             pickerWheel.OnSpinEnd(wheelPiece =>
             {
-                Debug.Log("Spin end: Amount:"+ wheelPiece.Index);
+                Debug.Log("Spin end: Amount:" + wheelPiece.Index);
                 gameScore += ScoreCalculation(wheelPiece.inside_token.CalculateScore());
                 uiSpinButton.interactable = true;
                 uiSpinButtonText.text = "Spin";
@@ -121,7 +249,7 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     void ResetScore()
@@ -139,7 +267,7 @@ public class GameManager : MonoBehaviour
             case ScoreCalculationType.invalidityScore:
                 break;
             case ScoreCalculationType.BasicCalculation:
-                score = (addScore - subScore) *multiScore / diviScore;
+                score = (addScore - subScore) * multiScore / diviScore;
                 break;
             case ScoreCalculationType.disregardNegativity:
                 score = addScore * multiScore;
@@ -157,7 +285,7 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < pickerWheel.wheelPieces.Length; i++)
         {
-            if(pickerWheel.wheelPieces[i]?.outside_token.tokenType.GetHashCode() >= 0)
+            if (pickerWheel.wheelPieces[i]?.outside_token.tokenType.GetHashCode() >= 0)
             {
                 positiveCost += pickerWheel.wheelPieces[i].outside_token.tokenType.GetHashCode();
                 // 스피드 토큰에 따른 휠 속도 조절
@@ -181,6 +309,76 @@ public class GameManager : MonoBehaviour
             {
                 negativeCost += -1 * pickerWheel.wheelPieces[i].inside_token.tokenType.GetHashCode();
             }
+        }
+    }
+
+    public void GetSetToken(OutSideToken.Type type , int count)
+    {
+        switch (type)
+        {
+            case OutSideToken.Type.nBetterScoreToken:
+                nBetterScore_outside_Token += count;
+                break;
+            case OutSideToken.Type.nSpeedToken:
+                nSpeed_outside_Token += count;
+                break;
+            case OutSideToken.Type.nScoreToken:
+                nScore_outside_Token += count;
+                break;
+            case OutSideToken.Type.EmptyToken:
+                break;
+            case OutSideToken.Type.pScoreToken:
+                pScore_outside_Token += count;
+                break;
+            case OutSideToken.Type.pSpeedToken:
+                pSpeed_outside_Token += count;
+                break;
+            case OutSideToken.Type.pSideToken:
+                pSide_outside_Token += count;
+                break;
+            case OutSideToken.Type.pBetterScoreToken:
+                pBetterScore_outside_Token += count;
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void GetSetToken(InSideToken.Type type, int count)
+    {
+        switch (type)
+        {
+            case InSideToken.Type.nBonusSpinToken:
+                nBonusSpin_inside_Token += count;
+                break;
+            case InSideToken.Type.nInvalidityToken:
+                nInvalidity_inside_Token += count;
+                break;
+            case InSideToken.Type.nPercentToken:
+                nPercent_inside_Token += count;
+                break;
+            case InSideToken.Type.nScoreToken:
+                nScore_inside_Token += count;
+                break;
+            case InSideToken.Type.EmptyToken:
+                break;
+            case InSideToken.Type.pScoreToken:
+                pScore_inside_Token += count;
+                break;
+            case InSideToken.Type.pPercentToken:
+                pPercent_inside_Token += count;
+                break;
+            case InSideToken.Type.pCopyToken:
+                pCopy_inside_Token += count;
+                break;
+            case InSideToken.Type.pInvalidityToken:
+                pInvalidity_inside_Token += count;
+                break;
+            case InSideToken.Type.pBonusSpinToken:
+                pBonusSpin_inside_Token += count;
+                break;
+            default:
+                break;
         }
     }
 }
